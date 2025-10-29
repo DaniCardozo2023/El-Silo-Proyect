@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Gestión de Ventas</h2>
+
+  <form method="get" action="{{ url_for('ventas') }}" class="row g-2 mb-3 align-items-end" id="filterFormVentas">
+    <div class="col-md-4">
+        <label for="productoFilterVentas" class="form-label">Filtrar por Producto:</label>
+        <select class="form-select" name="producto" id="productoFilterVentas">
+            <option value="">Todos los Productos</option>
+            {% for p_id, p_nombre in productos_filtro %}
+                <option value="{{ p_id }}" {% if filtro_prod_id|string == p_id|string %}selected{% endif %}>
+                    {{ p_nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="inicioFilterVentas" class="form-label">Desde Fecha:</label>
+        <input type="date" class="form-control" name="inicio" id="inicioFilterVentas" value="{{ filtro_inicio }}">
+    </div>
+    <div class="col-md-3">
+        <label for="finFilterVentas" class="form-label">Hasta Fecha:</label>
+        <input type="date" class="form-control" name="fin" id="finFilterVentas" value="{{ filtro_fin }}">
+    </div>
+    <div class="col-md-2 d-grid">
+        <a href="{{ url_for('ventas') }}" class="btn btn-secondary">Limpiar Filtros</a>
+    </div>
+  </form>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalVenta">
+      <i class="bi bi-plus-circle"></i> Nueva Venta
+    </button>
+    <div class="btn-group">
+        <a href="{{ url_for('exportar_ventas', formato='excel', producto=filtro_prod_id, inicio=filtro_inicio, fin=filtro_fin) }}"
+           class="btn btn-outline-success {% if ventas_count == 0 %}disabled{% endif %}"
+           {% if ventas_count == 0 %} tabindex="-1" aria-disabled="true" title="No hay ventas para exportar"{% endif %}>
+            <i class="bi bi-file-earmark-excel"></i> Excel
+        </a>
+        <a href="{{ url_for('exportar_ventas', formato='pdf', producto=filtro_prod_id, inicio=filtro_inicio, fin=filtro_fin) }}"
+           class="btn btn-outline-danger {% if ventas_count == 0 %}disabled{% endif %}"
+           {% if ventas_count == 0 %} tabindex="-1" aria-disabled="true" title="No hay ventas para exportar"{% endif %}>
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+        </a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Unidad</th>
+          <th>Precio Venta</th>
+          <th>Moneda</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in ventas %}
+        <tr>
+          <td>{{ v.producto }}</td>
+          <td>{{ v.cantidad }}</td>
+          <td>{{ v.unidad }}</td>
+          <td>{{ "%.2f"|format(v.precio_venta) }}</td>
+          <td>{{ v.moneda }}</td>
+          <td>{{ v.fecha.strftime('%Y-%m-%d %H:%M') if v.fecha else '-' }}</td>
+          <td>
+            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar{{ v.id }}">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+            <a href="{{ url_for('delete_venta', id=v.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que quieres eliminar esta venta? Se devolverá al stock.');">
+               <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>
+        <div class="modal fade" id="modalEditar{{ v.id }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form action="{{ url_for('edit_venta', id=v.id) }}" method="POST" class="needs-validation" novalidate>
+                <div class="modal-header"><h5 class="modal-title">Editar Venta de: {{ v.producto }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label">Cantidad <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" name="cantidad" value="{{ v.cantidad }}" required min="1">
+                    <div class="invalid-feedback">Debe ser un número (mayor a 0).</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Precio Venta (Total) <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" class="form-control" name="precio_venta" value="{{ v.precio_venta }}" required min="0">
+                    <div class="invalid-feedback">Debe ser un número (0 o más).</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Moneda <span class="text-danger">*</span></label>
+                    <select class="form-select" name="moneda" required>
+                      <option value="$" {% if v.moneda == '$' %}selected{% endif %}>$ (Pesos)</option>
+                      <option value="USD" {% if v.moneda == 'USD' %}selected{% endif %}>USD (Dólares)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+         {% if not ventas %}
+          <tr>
+              <td colspan="7" class="text-center text-muted fst-italic py-4">
+                  No se encontraron ventas que coincidan con los filtros aplicados.
+              </td>
+          </tr>
+         {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modalVenta" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="{{ url_for('add_venta') }}" method="POST" id="formventa" class="needs-validation" novalidate>
+        <div class="modal-header"><h5 class="modal-title">Nueva Venta</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Producto <span class="text-danger">*</span></label>
+            <select name="stock_id" class="form-select" id="productoventa" required>
+              <option value="" disabled selected>Seleccione un producto</option>
+              {% for p in productos %}
+              <option value="{{ p.id }}"
+                      data-stock="{{ p.cantidad }}"
+                      data-unidad="{{ p.unidad }}"
+                      data-deposito="{{ p.deposito_ref.nombre_deposito }}">
+                {{ p.producto }} ({{ p.deposito_ref.nombre_deposito }}) - Stock: {{ p.cantidad }} {{ p.unidad }}
+              </option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Debe seleccionar un producto.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cantidad a Vender <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="cantidadventa" name="cantidad" min="1" required>
+            <div id="errorStock" class="invalid-feedback">La cantidad supera el stock disponible.</div>
+            <small class="form-text text-muted" id="currentStockHelp">Stock disponible: -</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio Venta (Total) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" class="form-control" name="precio_venta" required min="0">
+            <small class="form-text text-muted">Monto total de esta venta.</small>
+            <div class="invalid-feedback">Debe ser un número (0 o más).</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Moneda <span class="text-danger">*</span></label>
+            <select name="moneda" class="form-select" required>
+              <option value="$">$ (Pesos)</option>
+              <option value="USD">USD (Dólares)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar Venta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const formVenta = document.getElementById("formventa");
+    const selectProducto = document.getElementById("productoventa");
+    const inputCantidad = document.getElementById("cantidadventa");
+    const errorStock = document.getElementById("errorStock");
+    const currentStockHelp = document.getElementById("currentStockHelp");
+    const modalVenta = document.getElementById('modalVenta');
+
+    const $selectProducto = $(selectProducto).select2({
+        theme: "bootstrap-5",
+        dropdownParent: $(modalVenta)
+    });
+
+    function updateStockInfo() {
+        const selectedValue = $selectProducto.val();
+        if (!selectedValue) {
+             currentStockHelp.textContent = "Seleccione un producto para ver el stock.";
+             inputCantidad.classList.remove("is-invalid");
+             return;
+        }
+        const option = selectProducto.options[selectProducto.selectedIndex];
+        const stockDisponible = parseInt(option.getAttribute("data-stock")) || 0;
+        const unidad = option.getAttribute("data-unidad") || "";
+        currentStockHelp.textContent = `Stock disponible: ${stockDisponible} ${unidad}`;
+        validarStock();
+    }
+    
+    function validarStock() {
+        const selectedValue = $selectProducto.val();
+        if (!selectedValue) return true;
+        const option = selectProducto.options[selectProducto.selectedIndex];
+        const stockDisponible = parseInt(option.getAttribute("data-stock")) || 0;
+        const unidad = option.getAttribute("data-unidad") || "";
+        const cantidad = parseInt(inputCantidad.value) || 0;
+        if (!isNaN(cantidad) && cantidad > 0 && cantidad > stockDisponible) {
+            inputCantidad.classList.add("is-invalid");
+            errorStock.textContent = `La cantidad (${cantidad}) supera el stock disponible (${stockDisponible} ${unidad}).`;
+            return false;
+        } else {
+            inputCantidad.classList.remove("is-invalid");
+            return true;
+        }
+    }
+
+    $selectProducto.on("change", updateStockInfo);
+    if(inputCantidad) inputCantidad.addEventListener("input", validarStock);
+    
+    if(formVenta) {
+        formVenta.addEventListener("submit", function (e) {
+            if (!formVenta.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
+            formVenta.classList.add('was-validated');
+            if (!validarStock()) { e.preventDefault(); e.stopPropagation(); }
+        });
+        modalVenta.addEventListener('show.bs.modal', function () {
+            $selectProducto.val(null).trigger('change');
+            formVenta.classList.remove('was-validated');
+            updateStockInfo();
+        });
+    }
+
+    const formVentas = document.getElementById('filterFormVentas');
+    const productoSelectVentas = document.getElementById('productoFilterVentas');
+    const inicioInputVentas = document.getElementById('inicioFilterVentas');
+    const finInputVentas = document.getElementById('finFilterVentas');
+
+    const $productoSelectVentas = $(productoSelectVentas).select2({
+      theme: "bootstrap-5",
+      placeholder: "Todos los Productos",
+      allowClear: true
+    });
+
+    function submitFormVentas() { formVentas.submit(); }
+
+    $productoSelectVentas.on('change', submitFormVentas);
+    if (inicioInputVentas) { inicioInputVentas.addEventListener('change', submitFormVentas); }
+    if (finInputVentas) { finInputVentas.addEventListener('change', submitFormVentas); }
+});
+</script>
+{% endblock %}

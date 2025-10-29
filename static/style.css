@@ -1,0 +1,79 @@
+/* Asegúrate de que este archivo esté en: /static/style.css */
+
+.navbar {
+  position: relative;
+  z-index: 1030;
+  width: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.hero {
+  /* ... (tu código para .hero sigue igual) ... */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: url("granos-de-arroz.jpg") no-repeat center center; /* Asegúrate que la imagen esté en /static/ */
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+
+/* Estilos de la tabla */
+.table th {
+  background-color: #198754;
+  color: white;
+}
+/* Estilos Offcanvas */
+/* Ajustado: Usando ID correcto de tu base.html */
+#offcanvasLoggedInNavbar, #offcanvasPublicNavbar {
+  height: auto;
+  max-height: 50vh; /* O el alto que prefieras */
+  width: 70%; /* O el ancho que prefieras */
+  border-bottom-left-radius: .5rem;
+  /* border-bottom-right-radius: .5rem; */ /* Puede que quieras quitar este si es offcanvas-end */
+}
+#offcanvasLoggedInNavbar .offcanvas-body,
+#offcanvasPublicNavbar .offcanvas-body {
+    flex-grow: 0;
+}
+
+
+.navbar .dropdown {
+  position: static;
+}
+.navbar .dropdown-menu {
+  z-index: 1031;
+}
+
+/* === NUEVO: Cambios para el tema claro === */
+/* IMPORTANTE: Esta regla cambia el fondo SÓLO en modo claro */
+html[data-bs-theme="light"] body {
+  background-color: #f8f9fa !important; /* Gris suave. !important para asegurar que se aplique */
+}
+
+/* Opcional: Aclarar un poco el fondo de las tablas rayadas en modo claro */
+html[data-bs-theme="light"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+   --bs-table-accent-bg: rgba(0, 0, 0, 0.02);
+}
+
+/* Opcional: Mantener cards blancas para contraste */
+html[data-bs-theme="light"] .card {
+    background-color: #ffffff;
+}
+/* === FIN NUEVO === */
+
+/* --- Asegúrate que la URL de la imagen del .hero sea correcta --- */
+/* Si "granos-de-arroz.jpg" está dentro de /static/, la regla actual está bien. */
+/* Si está en otro lado, ajusta la ruta en background: url(...) */

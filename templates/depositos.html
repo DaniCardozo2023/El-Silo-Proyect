@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <h1 class="mb-4">Depósitos</h1>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuevoDeposito">
+      <i class="bi bi-plus-circle"></i> Nuevo Depósito
+    </button>
+    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalImportarDepositos">
+      <i class="bi bi-file-earmark-arrow-up"></i> Importar desde Excel
+    </button>
+  </div>
+
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Ubicación</th>
+        <th>Comentarios</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in depositos %}
+      <tr>
+        <td>{{ d.nombre_deposito }}</td>
+        <td>{{ d.ubicacion }}</td>
+        <td>{{ d.comentarios }}</td>
+        <td>
+          <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalVer{{ d.id }}"><i class="bi bi-eye"></i></button>
+          <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar{{ d.id }}"><i class="bi bi-pencil-square"></i></button>
+          <a href="{{ url_for('delete_deposito', id=d.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que quieres eliminar este depósito?')"><i class="bi bi-trash"></i></a>
+          <div class="btn-group d-inline-block ms-1">
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle {% if not d.stocks %}disabled{% endif %}"
+                    data-bs-toggle="dropdown" aria-expanded="false"
+                    title="Exportar Stock de {{ d.nombre_deposito }}"
+                    {% if not d.stocks %}disabled{% endif %}>
+              <i class="bi bi-download"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item {% if not d.stocks %}disabled{% endif %}"
+                     href="{{ url_for('exportar_stock_deposito', deposito_id=d.id, formato='excel') if d.stocks else '#' }}">
+                     <i class="bi bi-file-earmark-excel text-success me-2"></i>Excel
+                  </a>
+              </li>
+              <li><a class="dropdown-item {% if not d.stocks %}disabled{% endif %}"
+                     href="{{ url_for('exportar_stock_deposito', deposito_id=d.id, formato='pdf') if d.stocks else '#' }}">
+                     <i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF
+                  </a>
+              </li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+       {% if not depositos %}
+         <tr>
+             <td colspan="4" class="text-center text-muted fst-italic py-4">
+                 No hay depósitos registrados. ¡Crea el primero!
+             </td>
+         </tr>
+       {% endif %}
+    </tbody>
+  </table>
+</div>
+
+{% for d in depositos %}
+<div class="modal fade" id="modalVer{{ d.id }}" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Stock en {{ d.nombre_deposito }}</h5>
+        {% if d.telefono or d.email %}
+          <small class="text-muted ms-3">
+            {% if d.telefono %}<i class="bi bi-telephone-fill"></i> {{ d.telefono }}{% endif %}
+            {% if d.email %} | <i class="bi bi-envelope-fill"></i> {{ d.email }}{% endif %}
+          </small>
+        {% endif %}
+      </div>
+      <div class="modal-body">
+        <table class="table table-sm table-striped">
+          <thead><tr><th>Producto</th><th>Cantidad</th><th>Unidad</th></tr></thead>
+          <tbody>
+            {% for stock in d.stocks %}
+            <tr><td>{{ stock.producto }}</td><td>{{ stock.cantidad }}</td><td>{{ stock.unidad }}</td></tr>
+            {% else %}
+            <tr><td colspan="3" class="text-center">No hay stocks en este depósito.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modalEditar{{ d.id }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('edit_deposito', id=d.id) }}" method="POST" class="needs-validation" novalidate>
+        <div class="modal-header"><h5 class="modal-title">Editar Depósito</h5></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre_deposito_{{ d.id }}" class="form-label">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nombre_deposito_{{ d.id }}" name="nombre_deposito" value="{{ d.nombre_deposito }}" required>
+            <div class="invalid-feedback">Debe ingresar un nombre para el depósito.</div>
+          </div>
+          <div class="mb-3">
+            <label for="ubicacion_{{ d.id }}" class="form-label">Ubicación</label>
+            <input type="text" class="form-control" id="ubicacion_{{ d.id }}" name="ubicacion" value="{{ d.ubicacion or '' }}">
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="telefono_{{ d.id }}" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono_{{ d.id }}" name="telefono" value="{{ d.telefono or '' }}">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email_{{ d.id }}" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email_{{ d.id }}" name="email" value="{{ d.email or '' }}">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="comentarios_{{ d.id }}" class="form-label">Comentarios</label>
+            <textarea class="form-control" id="comentarios_{{ d.id }}" name="comentarios">{{ d.comentarios or '' }}</textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<div class="modal fade" id="modalNuevoDeposito" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('add_deposito') }}" method="POST" class="needs-validation" novalidate>
+        <div class="modal-header"><h5 class="modal-title">Nuevo Depósito</h5></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre_deposito_nuevo" class="form-label">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nombre_deposito_nuevo" name="nombre_deposito" placeholder="Ej: Galpón Principal" required>
+            <div class="invalid-feedback">Debe ingresar un nombre para el depósito.</div>
+          </div>
+          <div class="mb-3">
+            <label for="ubicacion_nuevo" class="form-label">Ubicación</label>
+            <input type="text" class="form-control" id="ubicacion_nuevo" name="ubicacion" placeholder="(Opcional)">
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="telefono_nuevo" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono_nuevo" name="telefono" placeholder="(Opcional)">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email_nuevo" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email_nuevo" name="email" placeholder="(Opcional)">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="comentarios_nuevo" class="form-label">Comentarios</label>
+            <textarea class="form-control" id="comentarios_nuevo" name="comentarios" rows="3" placeholder="(Opcional)"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalImportarDepositos" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('import_depositos') }}" method="POST" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title">Importar Depósitos desde Excel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Seleccione un archivo <strong>.xlsx</strong> con las siguientes columnas exactas:</p>
+          <p><code class="user-select-all">Nombre Deposito, Ubicacion, Comentarios, Telefono, Email</code></p>
+          <div class="d-grid">
+              <a href="{{ url_for('static', filename='plantillas/plantilla_depositos.xlsx') }}" class="btn btn-sm btn-outline-success" download>
+                  <i class="bi bi-download"></i> Descargar plantilla de ejemplo
+              </a>
+          </div>
+          <hr>
+          <div class="mb-3">
+            <label for="file" class="form-label">Subir archivo:</label>
+            <input class="form-control" type="file" name="file" accept=".xlsx" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Subir e Importar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () { 'use strict'; var forms = document.querySelectorAll('.needs-validation'); Array.prototype.slice.call(forms).forEach(function (form) { form.addEventListener('submit', function (event) { if (!form.checkValidity()) { event.preventDefault(); event.stopPropagation(); } form.classList.add('was-validated'); }, false); }); })();
+</script>
+{% endblock %}

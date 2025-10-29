@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+<head><title>¡Bienvenido a El Silo!</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+<div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+<h2 style="color: #198754;">¡Tu Cuenta en El Silo está Lista!</h2>
+<p>Estimado usuario {{ username }},</p>
+<p>Hemos activado tu cuenta con éxito. Gracias por unirte a El Silo para optimizar la gestión de tu stock.</p>
+
+    <p>Actualmente estás en nuestro plan **{{ plan_name }}**.</p>
+
+    <p style="text-align: center; margin: 25px 0;">
+        <a href="{{ login_url }}" style="background-color: #0d6efd; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Acceder a la Aplicación</a>
+    </p>
+    
+    <p>¡Disfruta de todas las funcionalidades!</p>
+    <p>Saludos,<br>El equipo de El Silo</p>
+    <hr style="border: 0; border-top: 1px solid #eee;">
+    <p style="font-size: 0.8em; color: #777;">Si el botón no funciona, copia y pega esta URL en tu navegador: {{ login_url }}</p>
+</div>
+
+
+</body>
+</html>

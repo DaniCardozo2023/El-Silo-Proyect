@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <h1 class="mb-4">Stock</h1>
+
+  <form method="get" action="{{ url_for('stocks') }}" class="row g-2 mb-3 align-items-end" id="filterForm">
+    <div class="col-md-5">
+      <label for="q" class="form-label">Buscar stock:</label>
+      <input type="text" class="form-control" id="q" name="q" placeholder="Escriba producto..." value="{{ busqueda }}">
+    </div>
+    <div class="col-md-3">
+      <label for="depositoFilter" class="form-label">Depósito:</label>
+      <select class="form-select" name="deposito" id="depositoFilter">
+        <option value="">Todos</option>
+        {% for d in depositos %}
+          <option value="{{ d.id }}" {% if filtro_id|string == d.id|string %}selected{% endif %}>
+            {{ d.nombre_deposito }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="categoriaFilter" class="form-label">Categoría:</label>
+      <select class="form-select" name="categoria" id="categoriaFilter">
+        <option value="">Todas</option>
+        {% for c in categorias %}
+          <option value="{{ c }}" {% if filtro_cat == c %}selected{% endif %}>
+            {{ c }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-1 d-grid">
+      <a href="{{ url_for('stocks') }}" class="btn btn-secondary">Limpiar Filtros</a>
+    </div>
+  </form>
+
+  <div class="d-flex justify-content-between mb-3">
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalInsumo">
+        <i class="bi bi-plus-circle"></i> Ingresar Stock
+      </button>
+      <div class="d-flex gap-2">
+          {% if current_user.tenant.plan in ['Premium', 'Enterprise'] %}
+              <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalImportarStock">
+                <i class="bi bi-file-earmark-arrow-up"></i> Importar desde Excel
+              </button>
+          {% else %}
+              <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" title="Función solo disponible en planes Premium o Enterprise.">
+                <i class="bi bi-lock-fill"></i> Importar
+              </button>
+          {% endif %}
+          <div class="btn-group">
+              <a href="{{ url_for('exportar_stock', formato='excel', q=busqueda, deposito=filtro_id, categoria=filtro_cat) }}"
+                 class="btn btn-outline-success {% if stock_count == 0 %}disabled{% endif %}"
+                 {% if stock_count == 0 %} tabindex="-1" aria-disabled="true" title="No hay stock para exportar"{% endif %}>
+                  <i class="bi bi-file-earmark-excel"></i> Excel
+              </a>
+              <a href="{{ url_for('exportar_stock', formato='pdf', q=busqueda, deposito=filtro_id, categoria=filtro_cat) }}"
+                 class="btn btn-outline-danger {% if stock_count == 0 %}disabled{% endif %}"
+                 {% if stock_count == 0 %} tabindex="-1" aria-disabled="true" title="No hay stock para exportar"{% endif %}>
+                  <i class="bi bi-file-earmark-pdf"></i> PDF
+              </a>
+          </div>
+      </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr><th>Producto</th><th>Cantidad</th><th>Unidad</th><th>Depósito</th><th>Precio Compra</th><th>Moneda</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        {% for i in stocks %}
+        <tr>
+          <td>{{ i.producto }}</td>
+          <td>{{ i.cantidad }}</td>
+          <td>{{ i.unidad }}</td>
+          <td>{{ i.deposito_ref.nombre_deposito }}</td>
+          <td>{{ "%.2f"|format(i.precio_compra) }}</td>
+          <td>{{ i.moneda }}</td>
+          <td>
+            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar{{ i.id }}">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <a href="{{ url_for('delete_insumo', id=i.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este stock?');">
+              <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>
+
+        <div class="modal fade" id="modalEditar{{ i.id }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form action="{{ url_for('edit_insumo', id=i.id) }}" method="POST" class="needs-validation" novalidate>
+                <div class="modal-header"><h5 class="modal-title">Editar Stock</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label">Producto <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="producto" value="{{ i.producto }}" required>
+                    <div class="invalid-feedback">Falta completar este campo.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="categoria_edit_{{ i.id }}" class="form-label">Categoría</label>
+                    <input class="form-control" list="lista-categorias" id="categoria_edit_{{ i.id }}" name="categoria" value="{{ i.categoria or '' }}" placeholder="Escriba o seleccione una categoría...">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Cantidad <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" name="cantidad" value="{{ i.cantidad }}" required min="0">
+                    <div class="invalid-feedback">Debe ser un número (0 o más).</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Unidad <span class="text-danger">*</span></label>
+                    <select class="form-select" name="unidad" required>
+                      {% for u in unidades %}
+                        <option value="{{ u }}" {% if i.unidad == u %}selected{% endif %}>{{ u }}</option>
+                      {% else %}
+                        <option value="Unidades">Unidades</option>
+                      {% endfor %}
+                    </select>
+                    <input type="text" class="form-control mt-2" name="unidad_personalizada" placeholder="Escribir para cambiar/corregir unidad...">
+                    <small class="form-text text-muted">Seleccione de la lista o escriba para sobrescribir.</small>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Depósito <span class="text-danger">*</span></label>
+                    <select class="form-select" name="deposito" required>
+                      {% for d in depositos %}
+                        <option value="{{ d.id }}" {% if i.deposito_id == d.id %}selected{% endif %}>
+                          {{ d.nombre_deposito }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Precio de Compra <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" class="form-control" name="precio" value="{{ i.precio_compra }}" required min="0">
+                    <div class="invalid-feedback">Debe ser un número (0 o más).</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Moneda <span class="text-danger">*</span></label>
+                    <select class="form-select" name="moneda" required>
+                      <option value="$" {% if i.moneda == "$" %}selected{% endif %}>$ (Pesos)</option>
+                      <option value="USD" {% if i.moneda == "USD" %}selected{% endif %}>USD (Dólares)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% if not stocks %}
+          <tr>
+              <td colspan="7" class="text-center text-muted fst-italic py-4">
+                  No se encontraron productos que coincidan con los filtros aplicados.
+              </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modalInsumo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('add_insumo') }}" method="POST" class="needs-validation" novalidate>
+        <div class="modal-header"><h5 class="modal-title">Nuevo Stock</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="producto_stock" class="form-label">Producto <span class="text-danger">*</span>
+              <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="Nombre del producto o insumo (ej: Maíz Grano Fino)."></i>
+            </label>
+            <input type="text" class="form-control" name="producto" id="producto_stock" required>
+            <div class="invalid-feedback">Falta completar este campo.</div>
+          </div>
+          <div class="mb-3">
+            <label for="categoria_stock" class="form-label">Categoría</label>
+            <input class="form-control" list="lista-categorias" id="categoria_stock" name="categoria" placeholder="Escriba o seleccione una categoría...">
+          </div>
+          <div class="mb-3">
+            <label for="cantidad_stock" class="form-label">Cantidad <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" name="cantidad" id="cantidad_stock" required min="0">
+            <div class="invalid-feedback">Debe ser un número (0 o más).</div>
+          </div>
+          <div class="mb-3">
+            <label for="unidad_stock" class="form-label">Unidad <span class="text-danger">*</span></label>
+            <select class="form-select" name="unidad" id="unidad_stock" required>
+              <option value="" disabled selected>-- Seleccione una unidad --</option>
+              {% for u in unidades %}
+                <option value="{{ u }}">{{ u }}</option>
+              {% else %}
+                <option value="Unidades">Unidades</option>
+                <option value="Kg">Kg</option>
+              {% endfor %}
+            </select>
+            <input type="text" class="form-control mt-2" name="unidad_personalizada" placeholder="¿Otra unidad? Escríbela aquí...">
+            <small class="form-text text-muted">Seleccione de la lista o escriba una nueva unidad.</small>
+          </div>
+          <div class="mb-3">
+            <label for="deposito_stock" class="form-label">Depósito <span class="text-danger">*</span></label>
+            <select class="form-select" name="deposito" id="deposito_stock" required>
+              <option value="" disabled selected>Seleccione un depósito</option>
+              {% for d in depositos %}
+                <option value="{{ d.id }}">{{ d.nombre_deposito }}</option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Debe seleccionar un depósito.</div>
+          </div>
+          <div class="mb-3">
+            <label for="precio_stock" class="form-label">Precio de Compra (Total) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" class="form-control" name="precio" id="precio_stock" required min="0">
+            <small class="form-text text-muted">Precio TOTAL al que fue adquirido este lote.</small>
+            <div class="invalid-feedback">Debe ser un número (0 o más).</div>
+          </div>
+          <div class="mb-3">
+            <label for="moneda_stock" class="form-label">Moneda <span class="text-danger">*</span></label>
+            <select class="form-select" name="moneda" id="moneda_stock" required>
+              <option value="$">$ (Pesos)</option>
+              <option value="USD">USD (Dólares)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<datalist id="lista-categorias">
+  {% for c in categorias %}
+    <option value="{{ c }}">
+  {% endfor %}
+</datalist>
+
+<div class="modal fade" id="modalImportarStock" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+       <form action="{{ url_for('import_stock') }}" method="POST" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title">Importar Stock desde Excel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Seleccione un archivo <strong>.xlsx</strong> con las siguientes columnas exactas:</p>
+          <p><code class="user-select-all">Producto, Categoria, Cantidad, Unidad, Precio Compra, Moneda, Deposito</code></p>
+          <div class="d-grid">
+              <a href="{{ url_for('static', filename='plantillas/plantilla_stock.xlsx') }}" class="btn btn-sm btn-outline-success" download>
+                  <i class="bi bi-download"></i> Descargar plantilla de ejemplo
+              </a>
+          </div>
+          <hr>
+          <div class="mb-3">
+            <label for="file" class="form-label">Subir archivo:</label>
+            <input class="form-control" type="file" name="file" accept=".xlsx" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Subir e Importar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('filterForm');
+      const depositoSelect = document.getElementById('depositoFilter');
+      const categoriaSelect = document.getElementById('categoriaFilter');
+      const searchInput = document.getElementById('q');
+      let searchTimeout;
+      function submitForm() {
+        form.submit();
+      }
+      if (depositoSelect) {
+        depositoSelect.addEventListener('change', submitForm);
+      }
+      if (categoriaSelect) {
+        categoriaSelect.addEventListener('change', submitForm);
+      }
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(submitForm, 500);
+        });
+      }
+    });
+</script>
+{% endblock %}

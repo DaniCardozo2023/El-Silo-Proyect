@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}El Silo - Política de Privacidad{% endblock %}
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1>Política de Privacidad</h1>
+            <p class="lead">Información sobre cómo El Silo maneja tus datos.</p>
+            <hr class="mb-4">
+
+            <h2>1. Información que Recopilamos</h2>
+            <p>Recopilamos la información que proporcionas directamente durante el registro, como tu nombre, DNI, email y dominio de empresa. También almacenamos los datos que generas al usar la aplicación, incluyendo (pero no limitado a) tus registros de stock, ventas, depósitos y movimientos.</p>
+
+            <h2>2. Uso de la Información</h2>
+            <p>Utilizamos tu información exclusivamente para:</p>
+            <ul>
+                <li>Proveer, operar y mantener el servicio de El Silo.</li>
+                <li>Autenticar tu acceso a tu cuenta y dominio (tenant).</li>
+                <li>Procesar tus operaciones (ej. descontar stock al vender).</li>
+                <li>Generar reportes y notificaciones internas para tu gestión.</li>
+                <li>Comunicarnos contigo sobre tu cuenta, soporte técnico o actualizaciones del servicio (ej. reseteo de contraseña, confirmación de email).</li>
+            </ul>
+
+            <h2>3. Compartir Información</h2>
+            <p>Tus datos son tuyos. No compartimos, vendemos, ni alquilamos tu información personal o de tu negocio con terceros para fines de marketing. La información solo se comparte en las siguientes circunstancias limitadas:</p>
+            <ul>
+                <li>Con proveedores de servicios de infraestructura (como nuestro proveedor de hosting y base de datos) solo en la medida necesaria para operar la aplicación.</li>
+                <li>Con proveedores de servicios de email (como SendGrid) únicamente para enviar correos transaccionales solicitados por ti (ej. confirmación, reseteo).</li>
+                <li>Si es requerido por ley o para responder a un proceso legal válido.</li>
+            </ul>
+
+            <h2>4. Seguridad de los Datos</h2>
+            <p>Nos tomamos la seguridad en serio. Usamos medidas estándar de la industria, como el cifrado de contraseñas (Bcrypt) y conexiones seguras (HTTPS), para proteger tus datos. Sin embargo, ningún método de transmisión por internet es 100% seguro.</p>
+
+            <h2>5. Cookies</h2>
+            <p>Utilizamos cookies esenciales para el funcionamiento de la aplicación, principalmente para mantener tu sesión de usuario iniciada de forma segura (`session cookie`). No utilizamos cookies de seguimiento de terceros para publicidad. Ver nuestra <a href="{{ url_for('cookies_page') }}">Política de Cookies</a> para más detalles.</p>
+
+            <p class="text-muted mt-5"><em>Última actualización: 25 de Octubre, 2025</em></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

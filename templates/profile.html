@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+             <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4><i class="bi bi-person-fill-gear me-2"></i>Editar Perfil</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('profile') }}">
+                        <h5 class="card-title mb-3">Datos Personales</h5>
+                        <p class="card-text text-muted">Usuario: <strong>{{ current_user.username }}</strong> | Dominio: <strong>{{ current_user.tenant_id }}</strong></p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><label for="nombre" class="form-label">Nombre</label><input type="text" class="form-control" id="nombre" name="nombre" value="{{ current_user.nombre or '' }}" required></div>
+                            <div class="col-md-6 mb-3"><label for="apellido" class="form-label">Apellido</label><input type="text" class="form-control" id="apellido" name="apellido" value="{{ current_user.apellido or '' }}" required></div>
+                        </div>
+                        <div class="mb-3"><label for="email" class="form-label">Email</label><input type="email" class="form-control" id="email" name="email" value="{{ current_user.email or '' }}" required></div>
+                        <hr class="my-4">
+                        <h5 class="card-title mb-3">Cambiar Contraseña (Opcional)</h5>
+                        <div class="mb-3"><label for="current_password" class="form-label">Contraseña Actual</label><input type="password" class="form-control" id="current_password" name="current_password" placeholder="Dejar en blanco si no desea cambiar"></div>
+                        <div class="mb-3"><label for="new_password" class="form-label">Nueva Contraseña</label><input type="password" class="form-control" id="new_password" name="new_password" minlength="8" placeholder="Dejar en blanco si no desea cambiar"><small class="form-text text-muted">Mínimo 8 caracteres.</small></div>
+                         <div class="mb-3"><label for="confirm_new_password" class="form-label">Confirmar Nueva Contraseña</label><input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" placeholder="Dejar en blanco si no desea cambiar"></div>
+                        <div class="d-grid mt-4"><button type="submit" class="btn btn-success">Guardar Cambios</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

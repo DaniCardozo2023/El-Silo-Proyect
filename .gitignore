@@ -1,0 +1,12 @@
+# Base de datos local
+database/silo.db
+
+# Entorno virtual
+venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+
+# Archivos de VSCode
+.vscode/

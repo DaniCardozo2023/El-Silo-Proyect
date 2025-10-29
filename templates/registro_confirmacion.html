@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block head_styles %}
+<style>
+  body#registro-confirmacion-page {
+    background: url("{{ url_for('static', filename='granos-de-arroz.jpg') }}") no-repeat center center;
+    background-size: cover; background-attachment: fixed;
+  }
+  .card { background-color: #212529; color: var(--bs-light); border: none; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5); }
+  .flash-message-container { margin-bottom: 1.5rem; }
+  .flash-message { padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.9em; text-align: left; margin-bottom: 0.75rem; color: var(--bs-light); border: 1px solid transparent; }
+  .flash-message.alert-success { background-color: rgba(25, 135, 84, 0.3); border-color: rgba(25, 135, 84, 0.6); }
+</style>
+{% endblock %}
+
+{% block content %}
+<main role="main" class="d-flex align-items-center justify-content-center py-4">
+    <div class="row justify-content-center align-items-center w-100" style="max-width: 420px;">
+      <div class="col-12">
+        <div class="card shadow">
+          <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+              <img src="{{ url_for('static', filename='icon-192.png') }}" alt="Logo" width="70">
+              <h3 class="mt-3">Confirme su Email</h3>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-message-container text-center">
+                  {% for category, message in messages %}
+                    <div class="flash-message alert-{{ category }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <p class="text-muted text-center mt-3">Por favor, revise la bandeja de entrada de su correo electrónico (y su carpeta de spam) para completar el proceso de activación.</p>
+            
+            <div class="d-grid mt-4">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Volver al Inicio de Sesión</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</main>
+{% endblock %}

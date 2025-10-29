@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}El Silo - Política de Cookies{% endblock %}
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1>Política de Cookies</h1>
+            <p class="lead">Cómo utilizamos las cookies en El Silo.</p>
+            <hr class="mb-4">
+
+            <h2>¿Qué son las Cookies?</h2>
+            <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo (computadora, celular) cuando visitas un sitio web. Ayudan al sitio a "recordar" información sobre tu visita.</p>
+
+            <h2>Cómo Usamos las Cookies</h2>
+            <p>En El Silo, usamos cookies de forma muy limitada y solo para fines esenciales:</p>
+            <ul>
+                <li>
+                    <strong>Cookies Esenciales (Sesión):</strong> Utilizamos una cookie de sesión (`session`) que es estrictamente necesaria para el funcionamiento de la aplicación. Esta cookie nos permite:
+                    <ul>
+                        <li>Mantener tu sesión iniciada después de que te logueas.</li>
+                        <li>Identificar a qué dominio (tenant) perteneces, para mostrarte solo tu propia información.</li>
+                        <li>Proteger tu cuenta contra ataques (CSRF).</li>
+                    </ul>
+                    Esta cookie es fundamental y la aplicación no puede funcionar sin ella.
+                </li>
+                <li>
+                    <strong>Cookies de Preferencias:</strong>
+                    <ul>
+                        <li><strong>Modo Oscuro/Claro:</strong> Si decides cambiar el tema visual (modo oscuro o claro), guardamos esta preferencia en una cookie (`theme` en `localStorage`) para que el sitio recuerde tu elección en futuras visitas.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>Cookies de Terceros</h2>
+            <p>El Silo **NO** utiliza cookies de terceros para fines publicitarios, de marketing o de seguimiento analítico invasivo. Nuestra prioridad es la funcionalidad y privacidad de tus datos de gestión.</p>
+
+            <h2>Gestión de Cookies</h2>
+            <p>Puedes bloquear o eliminar cookies a través de la configuración de tu navegador web, pero ten en cuenta que si bloqueas la cookie de sesión, no podrás iniciar sesión ni utilizar la aplicación El Silo.</p>
+
+            <p class="text-muted mt-5"><em>Última actualización: 25 de Octubre, 2025</em></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

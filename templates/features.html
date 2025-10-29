@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}El Silo - Características{% endblock %}
+
+{% block head_styles %}
+<style>
+    .feature-header {
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        padding-top: 56px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+     #feature-header-video-container {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+    }
+     #feature-header-video {
+        min-width: 100%; min-height: 100%; width: auto; height: auto;
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+    }
+     .feature-header::before {
+        content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+        background-color: rgba(0, 0, 0, 0.55);
+        z-index: 1;
+    }
+     .feature-header .container {
+        position: relative;
+        z-index: 2;
+    }
+     .feature-header h1 { font-size: 3rem; font-weight: bold; }
+     .feature-header p.lead { font-size: 1.2rem; }
+     @media (max-width: 768px) {
+        .feature-header h1 { font-size: 2rem; }
+        .feature-header p.lead { font-size: 1rem; }
+        .feature-header { min-height: 40vh; }
+     }
+
+    .feature-section { padding: 50px 15px; }
+    .feature-section:nth-child(odd) { background-color: #ffffff; }
+    .feature-section:nth-child(even) { background-color: #f8f9fa; }
+    .feature-image { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .feature-title { color: var(--bs-success); margin-bottom: 0.5rem; }
+    .feature-list li { margin-bottom: 0.75rem; }
+    .feature-list i { color: var(--bs-success); margin-right: 10px; }
+    .cta-section { background-color: var(--bs-success); color: white; padding: 60px 15px; text-align: center; }
+    .fade-in-section { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+    .fade-in-section.is-visible { opacity: 1; transform: translateY(0); }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="feature-header">
+    <div id="feature-header-video-container">
+        <video autoplay loop muted playsinline id="feature-header-video">
+            <source src="{{ url_for('static', filename='campo_video2.mp4') }}" type="video/mp4">
+            Tu navegador no soporta videos HTML5.
+        </video>
+    </div>
+    <div class="container">
+        <h1>¿Por qué elegir El Silo?</h1>
+        <p class="lead">Diseñado para el sector agro y Pymes, El Silo combina gestión de inventario y ventas en una plataforma intuitiva y potente.</p>
+    </div>
+</div>
+
+<div class="feature-section fade-in-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 order-md-2">
+                <img src="{{ url_for('static', filename='granos-de-arroz.jpg') }}" alt="Gestión de Stock" class="feature-image">
+            </div>
+            <div class="col-md-6 order-md-1">
+                <h3 class="feature-title">Gestión Completa de Stock</h3>
+                <p>Controla tu inventario al detalle. Ideal para materias primas, productos terminados, repuestos y más.</p>
+                <ul class="list-unstyled feature-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Productos con Categorías, Unidades y Precios de Compra.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Múltiples Depósitos con gestión de ubicación y contacto.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Importación masiva desde Excel para carga rápida.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Trazabilidad de cada movimiento (ingreso, edición, eliminación).</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Notificaciones automáticas de stock bajo o agotado (umbral configurable).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="feature-section fade-in-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                 <img src="{{ url_for('static', filename='icon-192.png') }}" alt="Gestión de Ventas" class="feature-image" style="max-width: 400px; display: block; margin: auto; background-color: rgba(0,0,0,0.05); padding:20px;">
+            </div>
+            <div class="col-md-6">
+                <h3 class="feature-title">Ventas Integradas y Simplificadas</h3>
+                <p>Registra tus ventas directamente desde la plataforma, actualizando el stock en tiempo real.</p>
+                 <ul class="list-unstyled feature-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Formulario de venta con buscador de productos y validación de stock.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Descuento automático del inventario al confirmar la venta.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Historial de ventas detallado con opción de editar o anular (restaura stock).</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Exportación del historial de ventas a Excel y PDF.</li>
+                     <li><i class="bi bi-check-circle-fill"></i> Filtros de ventas por producto y rango de fechas.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="feature-section fade-in-section">
+    <div class="container">
+        <div class="row align-items-center">
+             <div class="col-md-6 order-md-2">
+                 <p class="text-center display-1"><i class="bi bi-file-earmark-bar-graph text-success"></i></p>
+            </div>
+            <div class="col-md-6 order-md-1">
+                <h3 class="feature-title">Reportes Poderosos</h3>
+                <p>Obtén información clave para tomar decisiones con reportes personalizables.</p>
+                 <ul class="list-unstyled feature-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Resúmenes rápidos: Valor de inventario, Ventas totales, Stock por depósito.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Generador de reportes a medida: Ventas por período, Stock Bajo, Ventas por Categoría, Actividad Usuarios, etc.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Filtros avanzados por fecha, producto, depósito, categoría, usuario.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Exportación de todos los reportes a formatos Excel (.xlsx) y PDF.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Historial completo de movimientos para auditoría.</li>
+                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section fade-in-section">
+    <div class="container">
+        <h2>Listo para tomar el control?</h2>
+        <p class="lead">Empieza a gestionar tu stock y ventas de forma eficiente con El Silo.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">Regístrate Gratis Ahora</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('.fade-in-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) { entry.target.classList.add('is-visible'); }
+        });
+    }, { threshold: 0.1 });
+    sections.forEach(section => { observer.observe(section); });
+});
+</script>
+{% endblock %}

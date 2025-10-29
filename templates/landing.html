@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}El Silo - Gestión de Stock y Ventas para Agro y Pymes{% endblock %}
+
+{% block head_styles %}
+<style>
+  .landing-hero {
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 56px;
+  }
+  #hero-video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+  }
+  #hero-video {
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+  }
+  .landing-hero::before {
+      content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+  }
+  .landing-content {
+      position: relative; z-index: 2; max-width: 800px; padding: 20px;
+  }
+  .landing-hero h1 { font-size: 3.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+  .landing-hero p { font-size: 1.3rem; margin-bottom: 1.5rem; }
+   @media (max-width: 768px) {
+        .landing-hero h1 { font-size: 2.2rem; }
+        .landing-hero p { font-size: 1rem; }
+   }
+  .section-padding { padding: 60px 15px; }
+  
+  .bg-light-gray { 
+    background-color: #f1f3f5; 
+  }
+  [data-bs-theme="dark"] .bg-light-gray {
+     background-color: var(--bs-body-bg) !important;
+  }
+  
+  .callout-box { 
+    background-color: white; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    height: 100%; 
+    text-align: center; 
+  }
+  [data-bs-theme="dark"] .callout-box {
+      background-color: #343a40;
+      color: var(--bs-light);
+  }
+  
+  .callout-box h3 { color: var(--bs-success); margin-bottom: 1rem; font-weight: bold;}
+  .callout-box i { font-size: 2.5rem; margin-bottom: 1rem; color: var(--bs-success); }
+  .why-silo-section img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+   .why-silo-section h4 { color: var(--bs-success); margin-top: 1rem; }
+   .why-silo-section ul { list-style: none; padding-left: 0; }
+   .why-silo-section li { margin-bottom: 0.5rem; }
+   .why-silo-section li i { color: var(--bs-success); margin-right: 10px; }
+   .text-section h2 { text-align: center; margin-bottom: 1.5rem; }
+   .text-section h3 { color: var(--bs-success); margin-top: 2rem; }
+   
+   .aspects-box { background-color: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 1.5rem; height: 100%; }
+   [data-bs-theme="dark"] .aspects-box {
+       background-color: var(--bs-gray-700);
+   }
+   
+   .aspects-box h4 { color: #0056b3; }
+   [data-bs-theme="dark"] .aspects-box h4 { color: #89b4f8; } /* Azul claro para modo oscuro */
+
+   .final-cta { background-color: var(--bs-success); color: white; text-align: center; }
+    .fade-in-section {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .fade-in-section.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-hero">
+  <div id="hero-video-container">
+      <video autoplay loop muted playsinline id="hero-video">
+          <source src="{{ url_for('static', filename='campo_video.mp4') }}" type="video/mp4">
+          Tu navegador no soporta videos HTML5.
+      </video>
+  </div>
+  <div class="landing-content">
+      <img src="{{ url_for('static', filename='icon-192.png') }}" alt="Logo El Silo" width="80" class="mb-3">
+    <h1>Gestión de Stock y Ventas Simplificada</h1>
+    <p>El Silo es la herramienta ideal para el sector agropecuario, Pymes y comercios que buscan control total sobre su inventario y operaciones de venta en una plataforma web fácil de usar.</p>
+    <div>
+      <a href="{{ url_for('register') }}" class="btn btn-success btn-lg me-2">Regístrese Gratis</a>
+      <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Iniciar Sesión</a>
+    </div>
+  </div>
+</div>
+
+<section class="section-padding bg-light-gray fade-in-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-4 col-md-6">
+                <div class="callout-box">
+                    <i class="bi bi-tags-fill"></i>
+                    <h3>Accesible y Escalable</h3>
+                    <p class="text-muted">Comienza **GRATIS** para siempre con nuestro plan individual. A medida que creces, nuestros planes de pago son increíblemente económicos, adaptándose a tu necesidad sin costos ocultos.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="callout-box">
+                    <i class="bi bi-arrows-angle-contract"></i>
+                    <h3>Stock y Ventas, Todo en Uno</h3>
+                     <p class="text-muted">A diferencia de otros, El Silo integra la gestión de inventario **Y** el registro de ventas. Descuenta stock automáticamente, lleva historial y genera reportes combinados.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="callout-box">
+                     <i class="bi bi-gear-wide-connected"></i>
+                    <h3>Flexible y Fácil de Usar</h3>
+                    <p class="text-muted">Interfaz intuitiva pensada para el agro y Pymes. Gestiona depósitos, categorías, unidades diversas (Kg, Litros, Bolsas) e importa tus datos fácilmente desde Excel.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding why-silo-section fade-in-section">
+    <div class="container">
+         <h2 class="text-center mb-5">El Mejor Sistema para Agro y Pymes</h2>
+         <div class="row align-items-center g-5">
+             <div class="col-lg-7">
+                 <img src="{{ url_for('static', filename='granos-de-arroz.jpg') }}" alt="Interfaz de El Silo">
+             </div>
+             <div class="col-lg-5">
+                 <h4>¿Por qué usar El Silo?</h4>
+                 <p class="text-muted">El Silo es una aplicación web segura y moderna para el control de inventarios y ventas, diseñada específicamente para ser simple y efectiva.</p>
+                 <ul>
+                    <li><i class="bi bi-check-circle-fill"></i> Accede desde PC, tablet o celular.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Sistema simple basado en operaciones (Entradas, Salidas, Ajustes).</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Configuración flexible (Categorías, Unidades, Depósitos).</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Reportes detallados (Valorización, Ventas, Movimientos).</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Exportación a Excel y PDF.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Seguro y con soporte técnico accesible.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Multi-usuario con planes adaptados.</li>
+                 </ul>
+                  <a href="{{ url_for('register') }}" class="btn btn-success mt-3">Empieza Gratis Ahora</a>
+             </div>
+         </div>
+    </div>
+</section>
+
+<section class="section-padding bg-light-gray text-section fade-in-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h2>¿Qué es la Gestión de Stock y Ventas?</h2>
+                <p class="text-muted">Es el proceso de supervisar y controlar el flujo de tus productos, desde que ingresan a tu depósito (compra o producción) hasta que salen (venta). Una buena gestión te permite saber qué tenés, dónde lo tenés, cuánto vale, y cuándo necesitás reponer o vender, optimizando tus recursos y ganancias.</p>
+                 <h2 class="mt-5">Aspectos a Tener en Cuenta al Elegir un Sistema</h2>
+                 <div class="row g-4">
+                     <div class="col-md-6"> <div class="aspects-box"> <h4>Precio y Valor</h4> <p>Buscá opciones claras, idealmente con un plan gratuito para probar. Un precio alto no siempre significa mejor calidad. Considerá el valor que te aporta en ahorro de tiempo y errores.</p> </div> </div>
+                      <div class="col-md-6"> <div class="aspects-box"> <h4>Flexibilidad</h4> <p>El sistema debe adaptarse a tu negocio (agro, comercio, Pyme), no al revés. ¿Permite tus unidades de medida? ¿Maneja depósitos? ¿Se ajusta a tu forma de trabajar?</p> </div> </div>
+                      <div class="col-md-6"> <div class="aspects-box"> <h4>Simplicidad</h4> <p>Un sistema ideal es fácil de aprender y usar diariamente. Demasiadas funciones complican y generan errores. Buscá lo esencial bien hecho.</p> </div> </div>
+                      <div class="col-md-6"> <div class="aspects-box"> <h4>Características Clave</h4> <p>Necesitás registrar entradas/salidas, ver stock actual, gestionar depósitos, y generar reportes útiles (valorización, ventas, historial). La exportación a Excel/PDF es fundamental.</p> </div> </div>
+                 </div>
+                 <h2 class="mt-5">Ventajas de Usar El Silo</h2>
+                 <p class="text-muted">El Silo automatiza el seguimiento de tu inventario y ventas, ahorrándote tiempo y dinero. Trabajarás más rápido, reducirás errores manuales, evitarás vender sin stock, tendrás claridad sobre el valor de tu inventario y podrás tomar mejores decisiones con reportes al instante. Olvídate de planillas complicadas y papeles perdidos.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding final-cta fade-in-section">
+    <div class="container">
+        <h2>Optimiza tu Gestión Hoy Mismo</h2>
+        <p class="lead mb-4">Únete a otros usuarios que ya controlan su negocio con El Silo.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">Regístrate Gratis Ahora</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('.fade-in-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) { entry.target.classList.add('is-visible'); }
+        });
+    }, { threshold: 0.1 });
+    sections.forEach(section => { observer.observe(section); });
+});
+</script>
+{% endblock %}

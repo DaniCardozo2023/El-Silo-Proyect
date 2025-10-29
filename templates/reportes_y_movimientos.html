@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Reportes y Movimientos</h1>
+    <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal" data-bs-target="#modalReportGenerator">
+      <i class="bi bi-tools"></i> Generar Reporte a Medida
+    </button>
+  </div>
+
+  <div class="row mb-4">
+        <div class="col-md-6 mb-3"><div class="card h-100 shadow-sm"><div class="card-header bg-success text-white"><i class="bi bi-cash-stack"></i> Ventas Totales</div><div class="card-body">{% for moneda, total, cantidad in total_ventas %}<p class="card-text fs-5"><strong>{{ moneda }} {{ "%.2f"|format(total) }}</strong> ({{ cantidad }} unidades)</p>{% else %}<p class="card-text">No hay ventas.</p>{% endfor %}</div></div></div>
+        <div class="col-md-6 mb-3"><div class="card h-100 shadow-sm"><div class="card-header bg-primary text-white"><i class="bi bi-box-seam"></i> Valor del Stock Actual</div><div class="card-body">{% for moneda, total in valor_stock %}<p class="card-text fs-5"><strong>{{ moneda }} {{ "%.2f"|format(total) }}</strong></p>{% else %}<p class="card-text">No hay stock.</p>{% endfor %}</div></div></div>
+        <div class="col-md-6 mb-3"><div class="card h-100 shadow-sm"><div class="card-header bg-info text-dark"><i class="bi bi-house-door"></i> Resumen de Depósitos</div><ul class="list-group list-group-flush">{% for nombre, count in resumen_depositos %}<li class="list-group-item d-flex justify-content-between align-items-center">{{ nombre }} <span class="badge bg-secondary rounded-pill">{{ count }} productos</span></li>{% else %}<li class="list-group-item">No hay depósitos con stock.</li>{% endfor %}</ul></div></div>
+        <div class="col-md-6 mb-3"><div class="card h-100 shadow-sm"><div class="card-header bg-warning text-dark"><i class="bi bi-trophy"></i> Top 5 Productos Vendidos</div><ul class="list-group list-group-flush">{% for producto, total_cantidad in top_productos %}<li class="list-group-item">{{ loop.index }}. {{ producto }} ({{ total_cantidad }} unidades)</li>{% else %}<li class="list-group-item">No hay datos.</li>{% endfor %}</ul></div></div>
+  </div>
+  <hr>
+
+  <h2 class="mb-3">Historial Reciente de Movimientos</h2>
+
+  <div class="d-flex flex-wrap justify-content-between mb-3 align-items-center">
+    <form method="GET" action="{{ url_for('reportes_y_movimientos') }}" class="d-flex mb-2" id="filterFormMovimientos">
+      <select name="tipo" class="form-select w-auto me-2" id="tipoFilterMovimientos">
+        <option value="">Todos</option>
+        <option value="STOCK" {% if filtro == 'STOCK' %}selected{% endif %}>Stock</option>
+        <option value="DEPOSITO" {% if filtro == 'DEPOSITO' %}selected{% endif %}>Depósito</option>
+        <option value="VENTA" {% if filtro == 'VENTA' %}selected{% endif %}>Venta</option>
+      </select>
+      <a href="{{ url_for('reportes_y_movimientos') }}" class="btn btn-secondary ms-2">Limpiar Filtro</a>
+    </form>
+    <div class="d-flex mb-2">
+      <div class="btn-group me-2">
+        <a href="{{ url_for('exportar_movimientos', formato='excel', tipo=filtro) }}"
+           class="btn btn-outline-success {% if movimientos_count == 0 %}disabled{% endif %}"
+           {% if movimientos_count == 0 %} tabindex="-1" aria-disabled="true" title="No hay movimientos para exportar"{% endif %}>
+           <i class="bi bi-file-earmark-excel"></i> Excel
+        </a>
+        <a href="{{ url_for('exportar_movimientos', formato='pdf', tipo=filtro) }}"
+           class="btn btn-outline-danger {% if movimientos_count == 0 %}disabled{% endif %}"
+           {% if movimientos_count == 0 %} tabindex="-1" aria-disabled="true" title="No hay movimientos para exportar"{% endif %}>
+           <i class="bi bi-file-earmark-pdf"></i> PDF
+        </a>
+      </div>
+      <form method="POST" action="{{ url_for('clear_movimientos') }}">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres borrar todo el historial?')">
+          Limpiar historial
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Descripción</th>
+          <th>Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in movimientos %}
+        <tr>
+          <td>{{ m.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>
+            {% if m.tipo == "STOCK" %}<span class="badge bg-primary"><i class="bi bi-box-seam"></i> Stock</span>
+            {% elif m.tipo == "DEPOSITO" %}<span class="badge bg-secondary"><i class="bi bi-house"></i> Depósito</span>
+            {% elif m.tipo == "VENTA" %}<span class="badge bg-success"><i class="bi bi-cart"></i> Venta</span>
+            {% else %}<span class="badge bg-light text-dark">{{ m.tipo }}</span>{% endif %}
+          </td>
+          <td>{{ m.descripcion }}</td>
+          <td><span class="badge text-bg-dark">{{ m.username }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted fst-italic py-3">No hay movimientos registrados {% if filtro %}con el filtro '{{ filtro }}'{% endif %}.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modalReportGenerator" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="{{ url_for('generar_reporte_modal') }}" method="POST" id="reportGeneratorForm">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">Generador de Reportes a Medida</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="reporte_tipo" class="form-label"><strong>1. Elija el tipo de reporte:</strong></label>
+            <select id="reporte_tipo" name="reporte_tipo" class="form-select" required>
+                <option value="" disabled selected>-- Seleccione un reporte --</option>
+                <optgroup label="Reportes de Inventario">
+                    <option value="valor_inventario">Valor Total del Inventario</option>
+                    <option value="valor_por_deposito">Valor de Stock por Depósito</option>
+                    <option value="stock_bajo">Stock Bajo / Agotado</option>
+                    <option value="ingresos_stock">Historial de Ingresos de Stock</option>
+                    <option value="resumen_depositos">Resumen de Depósitos (con Contacto)</option>
+                </optgroup>
+                <optgroup label="Reportes de Ventas y Rentabilidad">
+                    <option value="ventas_periodo">Ventas por Período</option>
+                    <option value="rentabilidad_ventas">Rentabilidad Estimada por Venta</option>
+                    <option value="ventas_por_usuario">Ventas por Usuario</option>
+                    <option value="ventas_categoria">Análisis de Ventas por Categoría</option>
+                </optgroup>
+                <optgroup label="Reportes de Trazabilidad">
+                    <option value="historial_producto">Historial de un Producto</option>
+                    <option value="actividad_usuarios">Actividad de Usuarios (Ventas/Mov.)</option>
+                </optgroup>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><strong>2. Aplique filtros (si es necesario):</strong></label>
+            <div id="filtros-dinamicos" class="p-3 border rounded bg-light" style="min-height: 80px;">
+                <div id="filtro-fechas" class="row g-2 mb-2" style="display: none;">
+                    <div class="col-md-6"><label for="filtro_fecha_inicio" class="form-label form-label-sm">Desde:</label><input type="date" name="fecha_inicio" id="filtro_fecha_inicio" class="form-control form-control-sm"></div>
+                    <div class="col-md-6"><label for="filtro_fecha_fin" class="form-label form-label-sm">Hasta:</label><input type="date" name="fecha_fin" id="filtro_fecha_fin" class="form-control form-control-sm"></div>
+                </div>
+                <div id="filtro-deposito" class="mb-2" style="display: none;"><label for="filtro_deposito_id" class="form-label form-label-sm">Depósito:</label><select name="deposito_id" id="filtro_deposito_id" class="form-select form-select-sm"><option value="">-- Todos --</option>{% for d in depositos %}<option value="{{ d.id }}">{{ d.nombre_deposito }}</option>{% endfor %}</select></div>
+                <div id="filtro-producto" class="mb-2" style="display: none;"><label for="filtro_producto_nombre" class="form-label form-label-sm">Producto:</label><select name="producto_nombre" id="filtro_producto_nombre" class="form-select form-select-sm"><option value="">-- Todos --</option>{% for p in productos %}<option value="{{ p }}">{{ p }}</option>{% endfor %}</select></div>
+                <div id="filtro-categoria" class="mb-2" style="display: none;"><label for="filtro_categoria_nombre" class="form-label form-label-sm">Categoría:</label><select name="categoria_nombre" id="filtro_categoria_nombre" class="form-select form-select-sm"><option value="">-- Todas --</option>{% for c in categorias %}<option value="{{ c }}">{{ c }}</option>{% endfor %}</select></div>
+                <div id="filtro-usuario" class="mb-2" style="display: none;"><label for="filtro_user_id" class="form-label form-label-sm">Usuario:</label><select name="user_id" id="filtro_user_id" class="form-select form-select-sm"><option value="">-- Todos --</option>{% for u in usuarios %}<option value="{{ u.id }}">{{ u.username }}</option>{% endfor %}</select></div>
+                <small id="filtro-ayuda" class="form-text text-muted">Seleccione un tipo de reporte para ver los filtros disponibles.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="formato" class="form-label"><strong>3. Elija el formato de exportación:</strong></label>
+            <select name="formato" id="formato" class="form-select" required>
+                <option value="excel">Excel (.xlsx)</option>
+                <option value="pdf">PDF</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="submitReportForm()">Generar y Descargar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const formMovimientos = document.getElementById('filterFormMovimientos');
+  const tipoSelectMovimientos = document.getElementById('tipoFilterMovimientos');
+  function submitFormMovimientos() { formMovimientos.submit(); }
+  if (tipoSelectMovimientos) { tipoSelectMovimientos.addEventListener('change', submitFormMovimientos); }
+
+  const reporteSelect = document.getElementById('reporte_tipo');
+  const todosLosFiltros = {
+      fechas: document.getElementById('filtro-fechas'),
+      deposito: document.getElementById('filtro-deposito'),
+      producto: document.getElementById('filtro-producto'),
+      usuario: document.getElementById('filtro-usuario'),
+      categoria: document.getElementById('filtro-categoria'),
+      ayuda: document.getElementById('filtro-ayuda')
+  };
+
+  const configReportes = {
+      'valor_inventario': ['categoria', 'deposito'],
+      'valor_por_deposito': ['categoria'],
+      'stock_bajo': ['categoria', 'deposito'],
+      'ingresos_stock': ['fechas', 'producto', 'categoria', 'deposito', 'usuario'],
+      'resumen_depositos': [],
+      'ventas_periodo': ['fechas', 'producto'],
+      'rentabilidad_ventas': ['fechas'],
+      'ventas_por_usuario': ['fechas', 'usuario'],
+      'ventas_categoria': ['fechas', 'deposito'],
+      'historial_producto': ['producto'],
+      'actividad_usuarios': ['fechas', 'usuario']
+  };
+
+  if(reporteSelect) {
+      reporteSelect.addEventListener('change', function() {
+          const tipoSeleccionado = this.value;
+          const filtrosAMostrar = configReportes[tipoSeleccionado] || [];
+          Object.values(todosLosFiltros).forEach(filtro => {
+              if (filtro) filtro.style.display = 'none';
+          });
+          if (filtrosAMostrar.length > 0) {
+              filtrosAMostrar.forEach(key => {
+                  const filtroDiv = todosLosFiltros[key];
+                  if (filtroDiv) filtroDiv.style.display = 'block';
+                  if (key === 'fechas' && filtroDiv) filtroDiv.style.display = 'flex';
+              });
+              todosLosFiltros.ayuda.style.display = 'none';
+          } else {
+              todosLosFiltros.ayuda.innerText = 'Este reporte no requiere filtros adicionales.';
+              todosLosFiltros.ayuda.style.display = 'block';
+          }
+      });
+      reporteSelect.dispatchEvent(new Event('change'));
+  }
+});
+
+function submitReportForm() {
+    const form = document.getElementById('reportGeneratorForm');
+    const reporteTipo = document.getElementById('reporte_tipo').value;
+    const formato = document.getElementById('formato').value;
+    if (!reporteTipo) { alert("Por favor, seleccione un tipo de reporte."); return; }
+
+    let baseUrl = '';
+    const endpointMap = {
+        'valor_inventario': "{{ url_for('exportar_stock', formato='FORMATO_PLACEHOLDER') }}",
+        'stock_bajo': "{{ url_for('exportar_stock_bajo', formato='FORMATO_PLACEHOLDER') }}",
+        'ingresos_stock': "{{ url_for('exportar_ingresos_stock', formato='FORMATO_PLACEHOLDER') }}",
+        'resumen_depositos': "{{ url_for('exportar_resumen_depositos', formato='FORMATO_PLACEHOLDER') }}",
+        'ventas_periodo': "{{ url_for('exportar_ventas', formato='FORMATO_PLACEHOLDER') }}",
+        'ventas_categoria': "{{ url_for('exportar_ventas_categoria', formato='FORMATO_PLACEHOLDER') }}",
+        'actividad_usuarios': "{{ url_for('exportar_actividad_usuarios', formato='FORMATO_PLACEHOLDER') }}",
+        // Estos no están mapeados directamente en el JS ya que la lógica está en el backend,
+        // pero se mantiene para la estructura del JS. La lógica del backend los mapea.
+        'valor_por_deposito': "{{ url_for('generar_reporte_modal') }}", 
+        'rentabilidad_ventas': "{{ url_for('generar_reporte_modal') }}",
+        'ventas_por_usuario': "{{ url_for('generar_reporte_modal') }}",
+        'historial_producto': "{{ url_for('generar_reporte_modal') }}",
+    };
+    
+    // Si el endpoint no es uno de los 4 manejados por el backend (que necesitan POST), usa el mapa de URL.
+    if (reporteTipo in endpointMap && !['valor_por_deposito', 'rentabilidad_ventas', 'ventas_por_usuario', 'historial_producto'].includes(reporteTipo)) {
+        baseUrl = endpointMap[reporteTipo];
+        baseUrl = baseUrl.replace('FORMATO_PLACEHOLDER', formato);
+        const params = new URLSearchParams();
+        const fechaInicio = document.getElementById('filtro_fecha_inicio').value;
+        const fechaFin = document.getElementById('filtro_fecha_fin').value;
+        const depositoId = document.getElementById('filtro_deposito_id').value;
+        const productoNombre = document.getElementById('filtro_producto_nombre').value;
+        const categoriaNombre = document.getElementById('filtro_categoria_nombre').value;
+        const userId = document.getElementById('filtro_user_id').value;
+
+        if (fechaInicio) params.append('fecha_inicio', fechaInicio);
+        if (fechaFin) params.append('fecha_fin', fechaFin);
+        if (depositoId) {
+            if (reporteTipo === 'valor_inventario' || reporteTipo === 'stock_bajo') params.append('deposito', depositoId);
+            else params.append('deposito_id', depositoId);
+        }
+        if (productoNombre) params.append('q', productoNombre); // En exportar_stock usa 'q'
+        if (categoriaNombre) {
+             if (reporteTipo === 'valor_inventario' || reporteTipo === 'stock_bajo') params.append('categoria', categoriaNombre);
+             else params.append('categoria_nombre', categoriaNombre);
+        }
+        if (userId) params.append('user_id', userId);
+
+        const finalUrl = baseUrl + (params.toString() ? (baseUrl.includes('?') ? '&' : '?') + params.toString() : '');
+        window.location.href = finalUrl;
+    } else {
+        // Para los reportes mapeados en el backend (que tienen lógica de manipulación de argumentos), usamos POST al mismo endpoint.
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Confirma tu cuenta</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #333;">¡Bienvenido a El Silo!</h2>
+        <p>Hola,</p>
+        <p>Gracias por registrarte. Solo falta un paso más para activar tu cuenta.</p>
+        <p>Tu nombre de usuario es: <strong style="color: #0056b3;">{{ username }}</strong></p>
+        <p>Por favor, haz clic en el siguiente enlace para confirmar tu dirección de correo electrónico:</p>
+        <p style="text-align: center; margin: 25px 0;">
+            <a href="{{ confirm_url }}" style="background-color: #198754; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Confirmar mi cuenta</a>
+        </p>
+        <p>Si no te registraste, por favor ignora este correo.</p>
+        <p>Saludos,<br>El equipo de El Silo</p>
+        <hr style="border: 0; border-top: 1px solid #eee;">
+        <p style="font-size: 0.8em; color: #777;">Si el botón no funciona, copia y pega esta URL en tu navegador: {{ confirm_url }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Historial de Notificaciones</h1>
+
+    {% for notif in notificaciones %}
+        <div class="alert alert-{{ 'secondary' if notif.leido else notif.tipo }} {% if notif.leido %}opacity-75{% endif %}" role="alert">
+            <h5 class="alert-heading">
+                {% if notif.tipo == 'warning' %}<i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {% elif notif.tipo == 'danger' %}<i class="bi bi-x-octagon-fill me-2"></i>
+                {% else %}<i class="bi bi-info-circle-fill me-2"></i>{% endif %}
+                {{ notif.titulo }}
+                {% if not notif.leido %}
+                    <span class="badge bg-danger float-end">Nueva</span>
+                {% endif %}
+            </h5>
+            <p>{{ notif.mensaje }}</p>
+            <hr>
+            <p class="mb-0 small text-muted">Generada: {{ notif.fecha.strftime('%d/%m/%Y a las %H:%M') }}</p>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">No hay notificaciones en tu historial.</div>
+    {% endfor %}
+</div>
+{% endblock %}

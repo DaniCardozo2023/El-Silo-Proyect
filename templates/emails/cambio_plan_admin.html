@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+<head><title>¡Tu Plan en El Silo ha Cambiado!</title></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+<div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+<h2 style="color: #0d6efd;">Actualización de Plan</h2>
+<p>Estimado administrador del dominio {{ tenant_id }} (Usuario: {{ username }}),</p>
+
+    <p>Tu plan en El Silo ha sido actualizado con éxito.</p>
+
+    <p style="font-size: 1.1em; font-weight: bold;">Nuevo Plan Asignado: <span style="color: #198754;">{{ new_plan }}</span></p>
+
+    <p>Esta actualización incluye los siguientes límites:</p>
+    <ul>
+        <li>Usuarios: {{ user_limit }}</li>
+        <li>Depósitos: {{ deposito_limit }}</li>
+        <li>Stock: {{ stock_limit }}</li>
+    </ul>
+
+    <p>Ya puedes disfrutar de las nuevas funcionalidades o la ampliación de límites.</p>
+
+    <p style="text-align: center; margin: 25px 0;">
+        <a href="{{ login_url }}" style="background-color: #0d6efd; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Ir a la Aplicación</a>
+    </p>
+    
+    <p>Saludos,<br>El equipo de El Silo</p>
+</div>
+
+
+</body>
+</html>

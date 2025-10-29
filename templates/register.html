@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block head_styles %}
+<style>
+  body#register-page {
+    background: url("{{ url_for('static', filename='granos-de-arroz.jpg') }}") no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+  .card { background-color: #212529; color: var(--bs-light); border: none; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5); width: 100%; }
+  .card .form-control { background-color: #343a40; border: 1px solid #495057; color: var(--bs-light); padding-top: 0.375rem; padding-bottom: 0.375rem; }
+  .card .form-control::placeholder { color: rgba(var(--bs-light-rgb), 0.6); }
+  .card .form-control:focus { background-color: #495057; border-color: #198754; color: var(--bs-light); box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); }
+  .card .form-label { font-size: 0.875em; margin-bottom: 0.3rem;}
+  .card .form-text { font-size: 0.75em; color: var(--bs-secondary) !important;}
+  .card .invalid-feedback { color: #dc3545; font-size: 0.75em; display: none; width: 100%; margin-top: 0.1rem; }
+  .was-validated .form-control:invalid ~ .invalid-feedback, .form-control.is-invalid ~ .invalid-feedback { display: block; }
+  #passMatchHelp.invalid-feedback { display: none; }
+  #confirm_password.is-invalid ~ #passMatchHelp.invalid-feedback { display: block; }
+  .flash-message-container { margin-bottom: 1rem; }
+  .flash-message { padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.8em; text-align: left; margin-bottom: 0.5rem; color: var(--bs-light); border: 1px solid transparent; }
+  .flash-message.alert-danger { background-color: rgba(220, 53, 69, 0.3); border-color: rgba(220, 53, 69, 0.6); }
+  .flash-message.alert-success { background-color: rgba(25, 135, 84, 0.3); border-color: rgba(25, 135, 84, 0.6); }
+  .flash-message.alert-info { background-color: rgba(13, 202, 240, 0.3); border-color: rgba(13, 202, 240, 0.6); }
+  .flash-message.alert-warning { background-color: rgba(255, 193, 7, 0.3); border-color: rgba(255, 193, 7, 0.6); color: #ffc107; }
+</style>
+{% endblock %}
+
+{% block content %}
+<main role="main" class="d-flex align-items-center justify-content-center py-4">
+    <div class="row justify-content-center align-items-center w-100" style="max-width: 600px;">
+      <div class="col-12">
+        <div class="card shadow">
+          <div class="card-body p-4 py-3">
+            <div class="text-center mb-3">
+                <img src="{{ url_for('static', filename='icon-192.png') }}" alt="Logo" width="60">
+                <h4 class="mt-2">Registro en El Silo</h4>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-message-container">
+                  {% for category, message in messages %}
+                    <div class="flash-message alert-{{ category }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}" id="registerForm" class="needs-validation" novalidate>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+<<<<<<< HEAD
+                    <label class="form-label">Dominio (Empresa) <span class="text-danger">*</span>
+                        <i class="bi bi-info-circle-fill text-secondary ms-1 info-icon" data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="Este código único identificará a tu empresa o equipo. Todos tus usuarios lo usarán para iniciar sesión (ej: TUCODIGO/usuario). Máx. 5 letras/números."></i>
+                    </label>
+                    <input type="text" class="form-control" name="domain" required maxlength="5" pattern="[a-zA-Z0-9]{1,5}"> 
+                    <div class="invalid-feedback">Debe tener entre 1 y 5 letras/números (sin espacios ni símbolos).</div>
+=======
+                    <label class="form-label">Dominio (Empresa) <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="domain" required placeholder="Ej: BR (máx 5 letras/núm.)">
+                    <div class="invalid-feedback">Por favor, ingrese el dominio.</div>
+>>>>>>> parent of a90891f (v3.14)
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">DNI <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="dni" required>
+                    <div class="invalid-feedback">Por favor, ingrese su DNI.</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="nombre" required>
+                    <div class="invalid-feedback">Por favor, ingrese su nombre.</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">Apellido <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="apellido" required>
+                    <div class="invalid-feedback">Por favor, ingrese su apellido.</div>
+                </div>
+              </div>
+              <div class="mb-2">
+                  <label class="form-label">Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" name="email" required>
+                  <div class="invalid-feedback">Por favor, ingrese un email válido.</div>
+              </div>
+              <div class="mb-2">
+                  <label class="form-label">Contraseña <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" name="password" id="password" required minlength="8">
+                  <small class="form-text text-secondary" id="passHelp">Mínimo 8 caracteres.</small>
+                  <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
+              </div>
+              <div class="mb-2">
+                  <label class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
+                  <div class="invalid-feedback" id="passMatchHelp">Las contraseñas no coinciden.</div>
+              </div>
+              <div class="d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-success" id="submitBtn" disabled>Registrarse</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Ya tengo cuenta</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    if (form) {
+        const pass1 = document.getElementById('password');
+        const pass2 = document.getElementById('confirm_password');
+        const passMatchHelp = document.getElementById('passMatchHelp');
+        const submitButton = document.getElementById('submitBtn');
+        const requiredInputs = form.querySelectorAll('input[required]');
+
+        function checkFormValidity() {
+            let allFilled = true;
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    allFilled = false;
+                }
+                if(input.id !== 'confirm_password') {
+                   input.classList.remove('is-invalid');
+                }
+            });
+
+            let passLengthOk = pass1.value.length >= 8;
+            let passMatch = true;
+
+            if (pass1.value || pass2.value) {
+                if (pass1.value !== pass2.value) {
+                    passMatch = false;
+                    pass2.classList.add('is-invalid');
+                    passMatchHelp.style.display = 'block';
+                } else {
+                    pass2.classList.remove('is-invalid');
+                    passMatchHelp.style.display = 'none';
+                }
+                if (!passLengthOk) {
+                     pass1.classList.add('is-invalid');
+                } else {
+                     pass1.classList.remove('is-invalid');
+                }
+            } else {
+                 pass1.classList.remove('is-invalid');
+                 pass2.classList.remove('is-invalid');
+                 passMatchHelp.style.display = 'none';
+            }
+
+            submitButton.disabled = !(allFilled && passMatch && passLengthOk);
+        }
+
+        requiredInputs.forEach(input => {
+            input.addEventListener('input', checkFormValidity);
+             input.addEventListener('input', function() {
+                 if(this.classList.contains('is-invalid')) {
+                     if(this.checkValidity()){
+                         this.classList.remove('is-invalid');
+                     }
+                 }
+                 checkFormValidity();
+             });
+        });
+        
+        if(pass2) { pass2.addEventListener('input', checkFormValidity); }
+        if(pass1) { pass1.addEventListener('input', checkFormValidity); }
+
+        checkFormValidity();
+
+        form.addEventListener('submit', function (event) {
+             checkFormValidity();
+            if (submitButton.disabled) {
+                 console.error("Intento de envío con botón deshabilitado.");
+                 event.preventDefault();
+                 event.stopPropagation();
+                 requiredInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        input.classList.add('is-invalid');
+                    }
+                 });
+                 if(pass1.value && pass1.value.length < 8) {
+                    pass1.classList.add('is-invalid');
+                 }
+                 if(pass2.value && pass1.value !== pass2.value) {
+                    pass2.classList.add('is-invalid');
+                    passMatchHelp.style.display = 'block';
+                 }
+            } else if (!form.checkValidity()) {
+                 console.warn("HTML5 checkValidity falló a pesar de que el botón estaba habilitado.");
+                 event.preventDefault();
+                 event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    }
+});
+</script>
+{% endblock %}

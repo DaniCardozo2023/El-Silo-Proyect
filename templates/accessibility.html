@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}El Silo - Accesibilidad{% endblock %}
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h1>Declaración de Accesibilidad</h1>
+            <p class="lead">El Silo se compromete a garantizar la accesibilidad digital para personas con discapacidades.</p>
+            <hr class="mb-4">
+
+            <h2>Medidas de Soporte</h2>
+            <p>Esta aplicación utiliza el framework Bootstrap 5, que incorpora varias características de accesibilidad:</p>
+            <ul>
+                <li>Uso de HTML semántico (etiquetas `nav`, `main`, `footer`).</li>
+                <li>Compatibilidad con lectores de pantalla a través de atributos ARIA y roles.</li>
+                <li>Navegación accesible por teclado.</li>
+                <li>Contraste de color adecuado en los modos claro y oscuro (estamos trabajando en mejorarlo continuamente).</li>
+                <li>Diseño responsivo que se adapta a diferentes tamaños de pantalla y niveles de zoom.</li>
+            </ul>
+
+            <h2>Estado de Conformidad</h2>
+            <p>Entendemos que la accesibilidad es un esfuerzo continuo. Si bien nos esforzamos por cumplir con las pautas de accesibilidad (como WCAG), es posible que algunas áreas de la aplicación aún necesiten mejoras.</p>
+
+            <h2>Feedback</h2>
+            <p>¡Tu feedback es bienvenido! Si encuentras barreras de accesibilidad o tenés dificultades para usar El Silo, por favor contáctanos:</p>
+            <p><strong><a href="mailto:elsiloapp@gmail.com">elsiloapp@gmail.com</a></strong></p>
+            <p>Haremos lo posible por abordar tus inquietudes.</p>
+
+            <p class="text-muted mt-5"><em>Última actualización: 25 de Octubre, 2025</em></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-4 text-center">Acerca de El Silo</h1>
+
+            <div class="accordion" id="acercaDeAccordion">
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingVersion">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVersion" aria-expanded="true" aria-controls="collapseVersion">
+                            <strong><i class="bi bi-info-circle-fill me-2"></i>Versión de la Aplicación</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseVersion" class="accordion-collapse collapse show" aria-labelledby="headingVersion" data-bs-parent="#acercaDeAccordion">
+                        <div class="accordion-body">
+                            <p><strong>El Silo Proyect - Versión 3.0</strong></p>
+                            <p>Esta versión incluye un sistema de base de datos relacional, gestión completa de inventario y un potente generador de reportes a medida con exportación a Excel y PDF.</p>
+                            <p><em>Fecha de última actualización: 25 de Octubre, 2025</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingComoUsar">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComoUsar" aria-expanded="false" aria-controls="collapseComoUsar">
+                            <strong><i class="bi bi-joystick me-2"></i>Funcionalidades y Cómo Usar</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseComoUsar" class="accordion-collapse collapse" aria-labelledby="headingComoUsar" data-bs-parent="#acercaDeAccordion">
+                        <div class="accordion-body">
+                            <p>Esta aplicación está diseñada para ser una herramienta central en la gestión de tu inventario. Aquí te explicamos cada sección:</p>
+                            <h5><i class="bi bi-cart"></i> Ventas</h5>
+                            <p>Registra cada venta. El sistema valida contra el stock disponible en tiempo real y descuenta la cantidad vendida automáticamente. Puedes editar, eliminar (restaurando el stock) y exportar tu historial de ventas a Excel o PDF.</p>
+                            <h5><i class="bi bi-box-seam"></i> Stock</h5>
+                            <p>Es el corazón de tu inventario. Añade productos, especificando su cantidad, unidad (Kg, Litros, Rollos, etc.) y precio de compra. Cada item de stock debe estar asignado a un depósito. También puedes importar masivamente tu inventario desde un archivo Excel.</p>
+                            <h5><i class="bi bi-house-door"></i> Depósitos</h5>
+                            <p>Crea y administra los lugares físicos donde almacenas tus productos (ej: "Galpón Principal", "Silo 3"). Puedes ver rápidamente qué productos hay en cada depósito usando el botón <i class="bi bi-eye"></i> y añadir datos de contacto.</p>
+                            <h5><i class="bi bi-bar-chart-line"></i> Reportes y Movimientos</h5>
+                            <p>Es tu centro de control y análisis. Ve resúmenes clave (valor de stock, total ventas) y un historial de cada acción (quién creó, editó o borró algo). Usa el "Generador de Reportes a Medida" para crear informes personalizados (ej: rentabilidad, ventas por período) y exportarlos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingContacto">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContacto" aria-expanded="false" aria-controls="collapseContacto">
+                            <strong><i class="bi bi-envelope-fill me-2"></i>Datos de Contacto</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseContacto" class="accordion-collapse collapse" aria-labelledby="headingContacto" data-bs-parent="#acercaDeAccordion">
+                        <div class="accordion-body">
+                            <p>Para soporte técnico, sugerencias o consultas, puedes contactar al equipo de desarrollo a través del siguiente correo electrónico:</p>
+                            <p><strong><a href="mailto:elsiloapp@gmail.com">elsiloapp@gmail.com</a></strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingInstalar">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstalar" aria-expanded="false" aria-controls="collapseInstalar">
+                            <strong><i class="bi bi-app-indicator me-2"></i>Instalar Aplicación (PWA)</strong>
+                        </button>
+                    </h2>
+                    <div id="collapseInstalar" class="accordion-collapse collapse" aria-labelledby="headingInstalar" data-bs-parent="#acercaDeAccordion">
+                        <div class="accordion-body">
+                            <p>Puedes instalar "El Silo" en tu celular o computadora para usarla como una aplicación nativa.</p>
+                            <button class="btn btn-primary" id="installPwaBtn" style="display: none;"><i class="bi bi-download me-2"></i> Instalar El Silo</button>
+                            <div id="iosInstallHelp" class="alert alert-info" style="display: none;"><h5 class="alert-heading">Para instalar en iOS (iPhone/iPad)</h5><p class="mb-0">1. Toca el botón de <strong>Compartir</strong> <i class="bi bi-box-arrow-up"></i> en Safari.<br>2. Desliza hacia arriba y selecciona <strong>"Añadir a pantalla de inicio"</strong>.</p></div>
+                            <p id="installPwaHelp" class="text-muted small mt-2" style="display: block;">Si usas Android o Chrome (PC/Mac), el botón de instalación aparecerá aquí si es compatible.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', (e) => {
+    let deferredPrompt;
+    const installBtn = document.getElementById('installPwaBtn');
+    const installHelp = document.getElementById('installPwaHelp');
+    const iosInstallHelp = document.getElementById('iosInstallHelp');
+    function isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.userAgent.includes("Mac") && "ontouchend" in document); }
+
+    if (isIOS()) {
+        if(installBtn) installBtn.style.display = 'none';
+        if(installHelp) installHelp.style.display = 'none';
+        if(iosInstallHelp) iosInstallHelp.style.display = 'block';
+    } else {
+        if(installHelp) installHelp.style.display = 'none';
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            if(installBtn) installBtn.style.display = 'block';
+        });
+        if(installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User choice: ${outcome}`);
+                    deferredPrompt = null; installBtn.style.display = 'none';
+                }
+            });
+        }
+    }
+});
+</script>
+{% endblock %}
